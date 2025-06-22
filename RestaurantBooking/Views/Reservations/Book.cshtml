@@ -1,0 +1,26 @@
+﻿@model RestaurantBooking.ViewModels.ReservationViewModel
+
+<h2>Make a Reservation at @Model.RestaurantName</h2>
+
+<form asp-action="Book" method="post">
+    <input type="hidden" asp-for="SelectedRestaurantID" />
+    <div class="mb-3">
+        <label asp-for="SelectedDate" class="form-label">Select Date</label>
+        <input asp-for="SelectedDate" type="date" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label asp-for="SelectedTimeSlot" class="form-label">Available Time Slots</label>
+        <select asp-for="SelectedTimeSlot" class="form-select" required>
+            <option selected disabled>Choose a time slot</option>
+            @foreach (var slot in Model.AvailableTimeSlots)
+            {
+                <option value="@slot.ID">@slot.StartTime - @slot.EndTime</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="NumberOfPeople" class="form-label">Number of People</label>
+        <input asp-for="NumberOfPeople" type="number" class="form-control" min="1" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Reserve</button>
+</form>

@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Restaurant>
+
+<h2>Manage Restaurants</h2>
+
+<a asp-action="CreateRestaurant" class="btn btn-primary">Create New Restaurant</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var restaurant in Model)
+        {
+            <tr>
+                <td>@restaurant.Name</td>
+                <td>
+                    <a asp-action="EditRestaurant" asp-route-id="@restaurant.ID" class="btn btn-warning">Edit</a>
+                    <form asp-action="DeleteRestaurant" asp-route-id="@restaurant.ID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,85 @@
+﻿@using System.Linq
+@model IEnumerable<RestaurantBooking.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Reservations";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="form-check form-switch mb-4">
+    <input class="form-check-input" type="checkbox" id="showCancelled" name="showCancelled" value="true"
+    @(ViewBag.ShowCancelled != null && (bool)ViewBag.ShowCancelled ? "checked" : "")
+           onchange="toggleShowCancelled(this.checked)">
+    <label class="form-check-label" for="showCancelled">Show Cancelled Reservations</label>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Restaurant</th>
+            <th>Date</th>
+            <th>Number of People</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@(reservation.Customer?.Email ?? "N/A")</td>
+                    <td>@(reservation.Restaurant?.Name ?? "N/A")</td>
+                    <td>@reservation.Date.ToString("f")</td>
+                    <td>@reservation.NumberOfPeople</td>
+                    <td>
+                        <span class="badge @(reservation.Status switch {
+                            "Pending" => "bg-warning",
+                            "Confirmed" => "bg-success",
+                            "Cancelled" => "bg-danger",
+                            _ => "bg-secondary"
+                        })">
+                            @reservation.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (reservation.Status == "Pending")
+                        {
+                            <form asp-action="ConfirmReservation" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@reservation.ID" />
+                                <button type="submit" class="btn btn-success">Confirm</button>
+                            </form>
+                            <form asp-action="CancelReservation" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@reservation.ID" />
+                                <button type="submit" class="btn btn-danger">Cancel</button>
+                            </form>
+                        }
+                        else if (reservation.Status != "Cancelled")
+                        {
+                            <form asp-action="CancelReservation" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="@reservation.ID" />
+                                <button type="submit" class="btn btn-danger">Cancel</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" class="text-center">No reservations found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function toggleShowCancelled(isChecked) {
+        const status = '@ViewBag.SelectedStatus';
+        window.location.href = `@Url.Action("Index", "Staff")?status=${status}&showCancelled=${isChecked}`;
+    }
+</script>

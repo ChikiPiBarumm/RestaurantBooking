@@ -1,0 +1,43 @@
+﻿@model RestaurantBooking.ViewModels.ReservationViewModel
+
+@{
+    ViewData["Title"] = "Edit Reservation";
+}
+
+<h2 class="mb-4">Edit Reservation</h2>
+
+<form asp-action="Edit" method="post" class="border p-4 bg-light rounded">
+    <input type="hidden" asp-for="SelectedRestaurantID" />
+    <input type="hidden" asp-for="ReservationID" />
+
+    <div class="mb-3">
+        <label asp-for="RestaurantName" class="form-label">Restaurant</label>
+        <input asp-for="RestaurantName" class="form-control" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SelectedDate" class="form-label">Date</label>
+        <input asp-for="SelectedDate" class="form-control" type="date" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NumberOfPeople" class="form-label">Number of People</label>
+        <input asp-for="NumberOfPeople" class="form-control" type="number" min="1" />
+        <span asp-validation-for="NumberOfPeople" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SelectedTimeSlot" class="form-label">Available Time Slots</label>
+        <select asp-for="SelectedTimeSlot" class="form-select">
+            <option value="">-- Select a Time Slot --</option>
+            @foreach (var slot in Model.AvailableTimeSlots)
+            {
+                <option value="@slot.ID">@slot.StartTime - @slot.EndTime</option>
+            }
+        </select>
+        <span asp-validation-for="SelectedTimeSlot" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="MyReservations" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<RestaurantBooking.Models.Reservation>
+
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<h1>My Reservations</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Number of People</th>
+            <th>Status</th>
+            <th>Restaurant</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Date.ToString("yyyy-MM-dd")</td>
+                <td>@reservation.Date.ToString("HH:mm")</td>
+                <td>@reservation.NumberOfPeople</td>
+                <td>@reservation.Status</td>
+                <td>@reservation.Restaurant.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@reservation.ID">Edit</a> |
+                    <a asp-action="Cancel" asp-route-id="@reservation.ID">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

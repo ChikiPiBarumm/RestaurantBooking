@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Reservation>
+
+<h2>Manage Reservations</h2>
+
+<a asp-action="CreateReservation" class="btn btn-primary">Create New Reservation</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Restaurant</th>
+            <th>Date</th>
+            <th>Number of People</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@(reservation.Customer != null ? reservation.Customer.Email : "N/A")</td>
+                <td>@reservation.Restaurant.Name</td>
+                <td>@reservation.Date.ToString("f")</td>
+                <td>@reservation.NumberOfPeople</td>
+                <td>
+                    <span class="badge @(reservation.Status == "Cancelled" ? "bg-danger" : "bg-success")">
+                        @reservation.Status
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="EditReservation" asp-route-id="@reservation.ID" class="btn btn-warning">Edit</a>
+                    <form asp-action="DeleteReservation" asp-route-id="@reservation.ID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

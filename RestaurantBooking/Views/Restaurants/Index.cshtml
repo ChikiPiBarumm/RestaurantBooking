@@ -1,0 +1,164 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@{
+    ViewData["Title"] = "Restaurants List";
+    var isUserLoggedIn = SignInManager.IsSignedIn(User);
+}
+
+<div class="container mt-5">
+    <h1 class="display-4 text-center mb-4">Our Restaurants</h1>
+
+    <div class="row">
+        @foreach (var restaurant in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@restaurant.Name</h5>
+                        <p class="card-text">
+                            <strong>Address:</strong> @restaurant.Address<br />
+                            <strong>Phone:</strong> @restaurant.Phone<br />
+                        </p>
+                        <p class="text-muted">@restaurant.Description</p>
+
+                        @if (isUserLoggedIn)
+                        {
+                            <button class="btn btn-outline-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#reservationModal"
+                                    data-restaurant-id="@restaurant.ID"
+                                    data-restaurant-name="@restaurant.Name">
+                                Make a Reservation
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-secondary btn-sm" disabled>
+                                Log in to Book
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationModalLabel">Make a Reservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reservationForm" asp-action="Book" method="post">
+                    <input type="hidden" id="restaurantId" name="SelectedRestaurantID" /> <!-- Fixed hidden input -->
+
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Select Date</label>
+                        <input type="date" class="form-control" id="date" name="SelectedDate" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="timeSlot" class="form-label">Available Time Slots</label>
+                        <select class="form-select" id="timeSlot" name="SelectedTimeSlot" required>
+                            <option selected disabled>Choose a time slot</option>
+                        </select>
+                        <div id="timeSlotError" class="text-danger mt-1" style="display:none;">
+                            No available time slots for the selected date.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="numberOfPeople" class="form-label">Number of People</label>
+                        <input type="number" class="form-control" id="numberOfPeople" name="NumberOfPeople" min="1" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Reserve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const reservationModal = document.getElementById('reservationModal');
+
+            reservationModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const restaurantId = button.getAttribute('data-restaurant-id');
+                const restaurantName = button.getAttribute('data-restaurant-name');
+
+                const modalTitle = reservationModal.querySelector('.modal-title');
+                modalTitle.textContent = 'Make a Reservation at ' + restaurantName;
+
+                const restaurantIdInput = reservationModal.querySelector('#restaurantId'); // Fixed selector
+                restaurantIdInput.value = restaurantId;
+
+                // Clear previous time slots
+                document.getElementById('timeSlot').innerHTML = '<option selected disabled>Choose a time slot</option>';
+                document.getElementById('timeSlotError').style.display = 'none';
+            });
+
+            document.getElementById('date').addEventListener('change', function () {
+                const restaurantId = document.getElementById('restaurantId').value;
+                const date = this.value;
+
+                if (restaurantId && date) {
+                    fetch(`/Reservations/GetAvailableTimeSlots?restaurantId=${restaurantId}&date=${date}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch available time slots.");
+                            }
+                            return response.json();
+                        })
+                        .then(slots => {
+                            const timeSlotSelect = document.getElementById('timeSlot');
+                            timeSlotSelect.innerHTML = '<option selected disabled>Choose a time slot</option>';
+                            if (slots.length > 0) {
+                                slots.forEach(slot => {
+                                    const option = document.createElement('option');
+                                    option.value = slot.id;
+                                    option.textContent = `${slot.startTime} - ${slot.endTime}`;
+                                    timeSlotSelect.appendChild(option);
+                                });
+                            } else {
+                                document.getElementById('timeSlotError').style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert('Failed to load time slots. Please try again later.');
+                        });
+                }
+            });
+
+            document.getElementById('reservationForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+
+                fetch('/Reservations/Book', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Reservation created successfully!');
+                            window.location.reload();
+                        } else {
+                            alert('Failed to create reservation. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An unexpected error occurred.');
+                    });
+            });
+        });
+    </script>
+}
