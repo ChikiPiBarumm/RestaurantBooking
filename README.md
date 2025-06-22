@@ -54,7 +54,7 @@ Run the following command in the terminal:
 
    ```bash
    dotnet ef database update
-     
+   ```  
 Note: If Entity Framework tools are not installed, install them with:
 
     ```bash
