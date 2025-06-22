@@ -44,9 +44,11 @@ This is a web-based **Restaurant Booking System** built with the **ASP.NET MVC**
 
 Open appsettings.json and update the DefaultConnection string to match your SQL Server settings:
 
-"ConnectionStrings": {
-  "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=YOUR_DB_NAME;Trusted_Connection=True;MultipleActiveResultSets=true"
-}
+   ```bash
+   "ConnectionStrings": {
+     "DefaultConnection": "Server=YOUR_SERVER_NAME;Database=YOUR_DB_NAME;Trusted_Connection=True;MultipleActiveResultSets=true"
+   }
+   ```
 
 3. **Apply migrations and create the database**
 
