@@ -59,8 +59,9 @@ Run the following command in the terminal:
    ```  
 Note: If Entity Framework tools are not installed, install them with:
 
-    ```bash
-    dotnet tool install --global dotnet-ef
+   ```bash
+   dotnet tool install --global dotnet-ef
+   ```
 
 4. **Run the application**
 
