@@ -39,6 +39,7 @@ This is a web-based **Restaurant Booking System** built with the **ASP.NET MVC**
    ```bash
    git clone https://github.com/yourusername/restaurant-booking-system.git
    cd restaurant-booking-system
+   ```
 
 2. **Update the connection string**
 
@@ -67,5 +68,6 @@ Note: If Entity Framework tools are not installed, install them with:
 
     ```bash
     dotnet run
+    ```
     
 Open your browser and go to https://localhost:5001 or the URL shown in the terminal.
